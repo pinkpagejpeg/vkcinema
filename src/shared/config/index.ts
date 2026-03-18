@@ -1,0 +1,1 @@
+export { FILM_LIST_ROUTE, FILM_ITEM_ROUTE } from "./consts"
