@@ -6,7 +6,7 @@ import { Loading, Error, Footer, Header, SubmitModal } from "../../../shared/ui"
 import { noPhotoIcon } from "../../../shared/assets"
 import { useFavorites, useFetching } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
-import type { IFilm } from "../../../shared/store"
+import type { IFilm } from "../../../shared/model"
 
 export const FilmInfo: FC = () => {
     const { id } = useParams()

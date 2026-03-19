@@ -1,0 +1,1 @@
+export type { ICommonState, IFilm, IFilmGenres } from './films'

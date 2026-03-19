@@ -1,6 +1,6 @@
 import { type FC, useCallback, useEffect, useState } from "react"
 import { Container, Stack, Typography, Box } from "@mui/material"
-import { type IFilm } from "../../../shared/store"
+import { type IFilm } from "../../../shared/model"
 import { Loading, Error, Footer, Header, FilmCard } from "../../../shared/ui"
 import { useFavorites } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"

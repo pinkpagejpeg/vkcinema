@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import { FilmsService } from "../../../shared/api"
 import { useFetching } from "../../../shared/lib"
-import type { IFilm } from "../../../shared/store"
+import type { IFilm } from "../../../shared/model"
 
 const limit = 50
 
