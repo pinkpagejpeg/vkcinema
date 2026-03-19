@@ -1,2 +1,1 @@
-export { useFetching } from './useFetching'
 export { useFavorites } from './useFavorites'

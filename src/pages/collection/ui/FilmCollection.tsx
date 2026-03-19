@@ -3,9 +3,8 @@ import { useSearchParams } from "react-router-dom"
 import { Container, Stack, Box, List, Typography } from "@mui/material"
 import { fetchFilms } from "../../../entities/films"
 import { FilterComponent } from "./FilterComponent"
-import { FilmCard } from "./FilmCard"
 import { useAppDispatch, useTypedSelector } from "../../../shared/store"
-import { Loading, Error, Footer, Header } from "../../../shared/ui"
+import { Loading, Error, Footer, Header, FilmCard } from "../../../shared/ui"
 
 // Компонент страницы со списком всех фильмов
 export const FilmCollection: FC = () => {
@@ -48,11 +47,19 @@ export const FilmCollection: FC = () => {
                         Список фильмов
                     </Typography>
 
-                    <List disablePadding>
-                        {films?.docs && films.docs.map((item) => (
-                            <FilmCard key={item.id} item={item} />
-                        ))}
-                    </List>
+                    {films?.docs.length === 0 ? (
+                        <Box sx={{ textAlign: 'start' }}>
+                            <Typography variant="h6" color="text.secondary">
+                                Фильмы не найдены
+                            </Typography>
+                        </Box>
+                    ) : (
+                        <List disablePadding>
+                            {films?.docs && films.docs.map((item) => (
+                                <FilmCard key={item.id} item={item} />
+                            ))}
+                        </List>
+                    )}
 
                     {/* <PaginationComponent type="films" /> */}
                 </Stack>

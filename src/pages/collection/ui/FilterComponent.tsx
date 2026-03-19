@@ -10,7 +10,7 @@ import {
 import { useFilter } from "./useFilter"
 import { useFetching } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
-import type { IFilmGenres } from "../../../entities/films"
+import type { IFilmGenres } from "../../../shared/store"
 
 export const FilterComponent: FC = () => {
   const [allGenres, setAllGenres] = useState<IFilmGenres[]>([])
