@@ -1,1 +1,0 @@
-export { fetchFilms } from './fetchFilms'

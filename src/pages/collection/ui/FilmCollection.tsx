@@ -1,29 +1,30 @@
-import { type FC, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
-import { Container, Stack, Box, List, Typography } from "@mui/material"
-import { fetchFilms } from "../../../entities/films"
+import { type FC, useEffect, useRef } from "react"
+import { Container, Stack, Box, Typography, CircularProgress } from "@mui/material"
 import { FilterComponent } from "./FilterComponent"
-import { useAppDispatch, useTypedSelector } from "../../../shared/store"
 import { Loading, Error, Footer, Header, FilmCard } from "../../../shared/ui"
+import { useFilms } from "./useFilms"
 
 // Компонент страницы со списком всех фильмов
 export const FilmCollection: FC = () => {
-    const dispatch = useAppDispatch()
-    const { films, loading, error } = useTypedSelector((state) => state.films)
-    const [searchParams] = useSearchParams()
-    // const { filmsCurrentPage, filmsCount } = useTypedSelector((state) => state.pagination)
+    const { films, loading, loadingMore, error, hasMore, loadMore } = useFilms()
+    const loaderRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const rating = searchParams.get("rating")?.split("-").map(Number) as [number, number] || [0, 10]
-        const years = searchParams.get("years")?.split("-").map(Number) as [number, number] || [1990, new Date().getFullYear()]
-        const genres = searchParams.get("genres")?.split(",") || []
+        if (!loaderRef.current || loading) return
 
-        dispatch(fetchFilms({
-            year: `${years[0]}-${years[1]}`,
-            rating: `${rating[0]}-${rating[1]}`,
-            genres: genres.join(",")
-        }))
-    }, [searchParams, dispatch])
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMore && !loadingMore) {
+                    loadMore()
+                }
+            },
+            { threshold: 0.1, rootMargin: '200px' }
+        )
+
+        observer.observe(loaderRef.current)
+        
+        return () => observer.disconnect()
+    }, [loading, hasMore, loadingMore, loadMore])
 
     if (loading) return <Loading />
     if (error) return <Error message={error} />
@@ -43,25 +44,25 @@ export const FilmCollection: FC = () => {
                 </Box>
 
                 <Stack spacing={2} flex={1}>
-                    <Typography variant="h4" component="h1" sx={{ mt: 2, mb: 3 }}>
+                    <Typography variant="h4" sx={{ mt: 2, mb: 3 }}>
                         Список фильмов
                     </Typography>
 
-                    {films?.docs.length === 0 ? (
-                        <Box sx={{ textAlign: 'start' }}>
-                            <Typography variant="h6" color="text.secondary">
-                                Фильмы не найдены
-                            </Typography>
-                        </Box>
+                    {!films.length ? (
+                        <Typography color="text.secondary">Фильмы не найдены</Typography>
                     ) : (
-                        <List disablePadding>
-                            {films?.docs && films.docs.map((item) => (
-                                <FilmCard key={item.id} item={item} />
+                        <>
+                            {films.map(film => (
+                                <FilmCard key={film.id} item={film} />
                             ))}
-                        </List>
-                    )}
 
-                    {/* <PaginationComponent type="films" /> */}
+                            {hasMore && (
+                                <Box ref={loaderRef} sx={{ py: 4, textAlign: 'center' }}>
+                                    {loadingMore && <CircularProgress size={32} />}
+                                </Box>
+                            )}
+                        </>
+                    )}
                 </Stack>
             </Stack>
 

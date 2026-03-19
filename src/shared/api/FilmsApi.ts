@@ -3,11 +3,15 @@ import { $host } from './http'
 // Сервис для работы с API фильмов
 export class FilmsService {
     // Получение списка всех фильмов
-    static async getAll(year?: string, rating?: string, genres?: string) {
+    static async getAll(limit: number, next?: string| null, year?: string, rating?: string, genres?: string) {
         const params: Record<string, string> = {
             "type": "movie",
-            "year": "1990-2026"
+            "year": "1990-2026",
+            "limit": `${limit}`
+        }
 
+        if(next) {
+            params.next = next
         }
 
         if (year) {
