@@ -1,7 +1,7 @@
 import { type FC, useEffect, useRef } from "react"
 import { Container, Stack, Box, Typography, CircularProgress } from "@mui/material"
-import { FilterComponent } from "./FilterComponent"
-import { Loading, Error, Footer, Header, FilmCard } from "../../../shared/ui"
+import { FilterComponent } from "./Filters"
+import { Loading, Error, Footer, Header, FilmCard, FilmCardSkeleton } from "../../../shared/ui"
 import { useFilms } from "./useFilms"
 
 // Компонент страницы со списком всех фильмов
@@ -22,11 +22,10 @@ export const FilmCollection: FC = () => {
         )
 
         observer.observe(loaderRef.current)
-        
+
         return () => observer.disconnect()
     }, [loading, hasMore, loadingMore, loadMore])
 
-    if (loading) return <Loading />
     if (error) return <Error message={error} />
 
     return (
@@ -48,7 +47,9 @@ export const FilmCollection: FC = () => {
                         Список фильмов
                     </Typography>
 
-                    {!films.length ? (
+                    {loading ? (
+                        [...Array(5)].map((_, i) => <FilmCardSkeleton key={i} />)
+                    ) : !films.length ? (
                         <Typography color="text.secondary">Фильмы не найдены</Typography>
                     ) : (
                         <>

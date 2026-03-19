@@ -11,12 +11,13 @@ import { useFilter } from "./useFilter"
 import { useFetching } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 import type { IFilmGenres } from "../../../shared/model"
+import { FiltersSkeleton } from "./FiltersSkeleton"
 
 export const FilterComponent: FC = () => {
   const [allGenres, setAllGenres] = useState<IFilmGenres[]>([])
   const { ratingRange, yearRange, currentGenres, setRatingRange, setYearRange, toggleGenre } = useFilter()
 
-  const [fetchGenres] = useFetching(async () => {
+  const [fetchGenres, loading] = useFetching(async () => {
     const { data } = await FilmsService.getGenres()
     setAllGenres(data)
   })
@@ -24,6 +25,10 @@ export const FilterComponent: FC = () => {
   useEffect(() => {
     fetchGenres()
   }, [])
+
+  if (loading) {
+    return <FiltersSkeleton />
+  }
 
   return (
     <Stack spacing={4} mt={4}>

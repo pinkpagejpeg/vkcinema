@@ -7,6 +7,7 @@ import { noPhotoIcon } from "../../../shared/assets"
 import { useFavorites, useFetching } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 import type { IFilm } from "../../../shared/model"
+import { FilmInfoSkeleton } from "./FilmInfoSkeleton"
 
 export const FilmInfo: FC = () => {
     const { id } = useParams()
@@ -45,15 +46,15 @@ export const FilmInfo: FC = () => {
         setOpen(false)
     }
 
-    if (loading) return <Loading />
+    if (loading) return <FilmInfoSkeleton />
     if (error) return <Error message={error} />
     if (!film) return null
 
     return (
-        <>
-            <Container maxWidth="xl">
-                <Header />
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <Header />
 
+            <Container maxWidth="xl" sx={{ flex: 1, py: 4 }}>
                 <Grid container spacing={4}>
                     <Grid size={3}>
                         <Box
@@ -67,11 +68,10 @@ export const FilmInfo: FC = () => {
                             <img
                                 src={film?.poster?.url || noPhotoIcon}
                                 alt={film.name || undefined}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover', }}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             />
                         </Box>
                     </Grid>
-
 
                     <Grid size={9}>
                         <Stack spacing={2}>
@@ -126,6 +126,7 @@ export const FilmInfo: FC = () => {
                                             <Typography fontWeight={500}>Длительность</Typography>
                                         </Stack>
                                     </Grid>
+                                    
                                     <Grid>
                                         <Stack spacing={0.5}>
                                             <Typography>{film.year || "—"}</Typography>
@@ -176,8 +177,9 @@ export const FilmInfo: FC = () => {
                         </Stack>
                     </Grid>
                 </Grid>
-                <Footer />
             </Container>
+
+            <Footer />
 
             <SubmitModal
                 title={isFavorite(String(film.id)) ?
@@ -188,6 +190,6 @@ export const FilmInfo: FC = () => {
                 onClose={handleClose}
                 onConfirm={handleConfirm}
             />
-        </>
+        </Box>
     )
 }

@@ -1,30 +1,72 @@
 import { useSearchParams } from "react-router-dom"
+import { useState, useEffect } from "react"
+
+function useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState<T>(value)
+
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedValue(value), delay)
+        return () => clearTimeout(timer)
+    }, [value, delay])
+
+    return debouncedValue
+}
 
 export function useFilter() {
     const [searchParams, setSearchParams] = useSearchParams()
 
-    const ratingFromUrl = searchParams.get("rating")?.split("-").map(Number) as [number, number] || [0, 10]
-    const yearsFromUrl = searchParams.get("years")?.split("-").map(Number) as [number, number] || [1990, new Date().getFullYear()]
-    const genresFromUrl = searchParams.get("genres")?.split(",") || []
+    // Инициализация рейтинга из URL
+    const [rating, setRating] = useState<[number, number]>(() => {
+        const rating = searchParams.get("rating")?.split("-").map(Number) as [number, number]
+        return rating || [0, 10]
+    })
 
+    // Инициализация годов из URL
+    const [years, setYears] = useState<[number, number]>(() => {
+        const years = searchParams.get("years")?.split("-").map(Number) as [number, number]
+        return years || [1990, new Date().getFullYear()]
+    })
+
+    // Получение жанров из URL
+    const genres = searchParams.get("genres")?.split(",") || []
+
+    const debouncedRating = useDebounce(rating, 500)
+    const debouncedYears = useDebounce(years, 500)
+
+    // Обновление URL при изменении рейтинга с дебаунсом
+    useEffect(() => {
+        const newParams = new URLSearchParams(searchParams)
+
+        newParams.set("rating", `${debouncedRating[0]}-${debouncedRating[1]}`)
+        setSearchParams(newParams, { replace: true })
+    }, [debouncedRating])
+
+    // Обновление URL при изменении годов с дебаунсом
+    useEffect(() => {
+        const newParams = new URLSearchParams(searchParams)
+
+        newParams.set("years", `${debouncedYears[0]}-${debouncedYears[1]}`)
+        setSearchParams(newParams, { replace: true })
+    }, [debouncedYears])
+
+    // Обновление рейтинга
     const setRatingRange = (newRating: [number, number]) => {
-        const newParams = new URLSearchParams(searchParams)
-        newParams.set("rating", `${newRating[0]}-${newRating[1]}`)
-        setSearchParams(newParams, { replace: true })
+        setRating(newRating)
     }
 
+    // Обновление годов
     const setYearRange = (newYears: [number, number]) => {
-        const newParams = new URLSearchParams(searchParams)
-        newParams.set("years", `${newYears[0]}-${newYears[1]}`)
-        setSearchParams(newParams, { replace: true })
+        setYears(newYears)
     }
 
+    // Обновление жанров
     const toggleGenre = (genre: string) => {
         const newParams = new URLSearchParams(searchParams)
         const currentGenres = searchParams.get("genres")?.split(",") || []
         
         if (currentGenres.includes(genre)) {
             const filtered = currentGenres.filter(g => g !== genre)
+
             if (filtered.length) {
                 newParams.set("genres", filtered.join(","))
             } else {
@@ -34,13 +76,13 @@ export function useFilter() {
             newParams.set("genres", [...currentGenres, genre].join(","))
         }
         
-        setSearchParams(newParams, { replace: true })
+        setSearchParams(newParams, { replace: true }) 
     }
 
     return {
-        ratingRange: ratingFromUrl,
-        yearRange: yearsFromUrl,
-        currentGenres: genresFromUrl,
+        ratingRange: rating,
+        yearRange: years,
+        currentGenres: genres,
         setRatingRange,
         setYearRange,
         toggleGenre
