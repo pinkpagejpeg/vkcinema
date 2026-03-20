@@ -2,11 +2,12 @@ import { useState, type FC } from "react"
 import { NavLink } from "react-router-dom"
 import { Card, CardContent, Stack, CardMedia, Typography, Chip, Divider, Button, IconButton } from "@mui/material"
 import FavoriteIcon from '@mui/icons-material/Favorite'
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import { FILM_ITEM_ROUTE } from "../../config"
-import type { IFilm } from "../../store"
+import type { IFilm } from "../../model"
 import { noPhotoIcon } from "../../assets"
 import { SubmitModal } from "../submitModal"
-import { useFavorites } from "../../lib"
+import { useCompare, useFavorites } from "../../lib"
 
 interface FilmCardProps {
     item: IFilm
@@ -14,6 +15,7 @@ interface FilmCardProps {
 
 export const FilmCard: FC<FilmCardProps> = ({ item }) => {
     const { isFavorite, toggleFavorite } = useFavorites()
+    const { addToCompare } = useCompare()
     const [open, setOpen] = useState(false)
 
     const handleFavoriteClick = () => {
@@ -28,6 +30,7 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
         toggleFavorite(String(item.id))
         setOpen(false)
     }
+
     return (
         <>
             <Card sx={{ mb: 2, borderRadius: 2, boxShadow: 3 }}>
@@ -85,6 +88,21 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
                                 <NavLink to={`${FILM_ITEM_ROUTE}/${item.id}`} style={{ textDecoration: "none" }}>
                                     <Button variant="contained">Подробнее</Button>
                                 </NavLink>
+
+                                <IconButton
+                                    onClick={() => addToCompare(String(item?.id))}
+                                    color="primary"
+                                    aria-label="compare"
+                                    sx={{
+                                        color: '#2196f3',
+                                        '&:hover': {
+                                            color: '#1976d2'
+                                        }
+                                    }}
+                                >
+                                    <CompareArrowsIcon />
+                                </IconButton>
+                                
                                 <IconButton
                                     onClick={handleFavoriteClick}
                                     aria-label="add to favorites"

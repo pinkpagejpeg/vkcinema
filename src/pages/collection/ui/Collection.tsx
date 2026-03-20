@@ -1,8 +1,8 @@
 import { type FC, useEffect, useRef } from "react"
 import { Container, Stack, Box, Typography, CircularProgress } from "@mui/material"
 import { FilterComponent } from "./Filters"
-import { Error, Footer, Header, FilmCard, FilmCardSkeleton } from "../../../shared/ui"
 import { useFilms } from "./useFilms"
+import { Error, Footer, Header, FilmCard, FilmCardSkeleton } from "../../../shared/ui"
 
 // Компонент страницы со списком всех фильмов
 export const Collection: FC = () => {

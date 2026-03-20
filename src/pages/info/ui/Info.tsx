@@ -2,16 +2,18 @@ import { type FC, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Container, Grid, Box, Badge, Stack, Typography, IconButton } from "@mui/material"
 import FavoriteIcon from '@mui/icons-material/Favorite'
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
+import { InfoSkeleton } from "./InfoSkeleton"
 import { Error, Footer, Header, SubmitModal } from "../../../shared/ui"
 import { noPhotoIcon } from "../../../shared/assets"
-import { useFavorites, useFetching } from "../../../shared/lib"
+import { formatMovieLength, useCompare, useFavorites, useFetching } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 import type { IFilm } from "../../../shared/model"
-import { InfoSkeleton } from "./InfoSkeleton"
 
 export const Info: FC = () => {
     const { id } = useParams()
     const { isFavorite, toggleFavorite } = useFavorites()
+    const { addToCompare } = useCompare()
     const [film, setFilm] = useState<IFilm | null>(null)
     const [open, setOpen] = useState(false)
 
@@ -25,13 +27,6 @@ export const Info: FC = () => {
             fetchFilmById(id)
         }
     }, [id])
-
-    const formatMovieLength = (length?: number | null) => {
-        if (!length || length === 0) return "—"
-        return length >= 60
-            ? `${Math.floor(length / 60)} ч. ${length % 60} мин.`
-            : `${length} мин.`
-    }
 
     const handleFavoriteClick = () => {
         setOpen(true)
@@ -91,6 +86,21 @@ export const Info: FC = () => {
                                                 }
                                             }}
                                         />
+
+                                        <IconButton
+                                            onClick={() => addToCompare(String(film?.id))}
+                                            color="primary"
+                                            aria-label="compare"
+                                            sx={{
+                                                color: '#2196f3',
+                                                '&:hover': {
+                                                    color: '#1976d2'
+                                                }
+                                            }}
+                                        >
+                                            <CompareArrowsIcon />
+                                        </IconButton>
+
                                         <IconButton
                                             onClick={handleFavoriteClick}
                                             aria-label="add to favorites"
@@ -126,7 +136,7 @@ export const Info: FC = () => {
                                             <Typography fontWeight={500}>Длительность</Typography>
                                         </Stack>
                                     </Grid>
-                                    
+
                                     <Grid>
                                         <Stack spacing={0.5}>
                                             <Typography>{film.year || "—"}</Typography>

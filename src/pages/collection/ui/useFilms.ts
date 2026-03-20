@@ -34,9 +34,9 @@ export function useFilms() {
             genres
         )
         return data
-    }, [getFilterParams, limit])
+    }, [getFilterParams])
 
-    // Первая загрузка загрузка
+    // Первая загрузка фильмов
     const [fetchFilms, loading, error] = useFetching(async () => {
         const data = await fetchFilmsRequest()
 

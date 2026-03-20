@@ -26,6 +26,7 @@ export const Favorites: FC = () => {
             const promises = favorites.map(id => FilmsService.getById(id))
             const responses = await Promise.all(promises)
             const films = responses.map(response => response.data)
+            
             setFavoriteFilms(films)
         } catch (error) {
             setError('Не удалось загрузить избранные фильмы')

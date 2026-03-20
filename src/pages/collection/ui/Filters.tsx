@@ -8,10 +8,10 @@ import {
   Slider
 } from "@mui/material"
 import { useFilter } from "./useFilter"
+import { FiltersSkeleton } from "./FiltersSkeleton"
 import { useFetching } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 import type { IFilmGenres } from "../../../shared/model"
-import { FiltersSkeleton } from "./FiltersSkeleton"
 
 export const FilterComponent: FC = () => {
   const [allGenres, setAllGenres] = useState<IFilmGenres[]>([])

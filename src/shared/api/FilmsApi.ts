@@ -6,7 +6,6 @@ export class FilmsService {
     static async getAll(limit: number, next?: string| null, year?: string, rating?: string, genres?: string) {
         const params: Record<string, string> = {
             "type": "movie",
-            "year": "1990-2026",
             "limit": `${limit}`
         }
 
