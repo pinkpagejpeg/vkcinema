@@ -35,18 +35,23 @@ export const FilterComponent: FC = () => {
       <Stack spacing={1}>
         <Typography variant="h6">Жанры</Typography>
         <FormGroup>
-          {allGenres?.map((genre) => (
-            <FormControlLabel
-              key={genre.slug}
-              control={
-                <Checkbox
-                  checked={currentGenres.includes(genre.slug)}
-                  onChange={() => toggleGenre(genre.slug)}
-                />
-              }
-              label={genre.name}
-            />
-          ))}
+          {allGenres?.map((genre) => {
+            const genreName = genre.name
+            if (!genreName) return null
+            
+            return (
+              <FormControlLabel
+                key={genreName}
+                control={
+                  <Checkbox
+                    checked={currentGenres.includes(genreName)}
+                    onChange={() => toggleGenre(genreName)}
+                  />
+                }
+                label={genreName}
+              />
+            )
+          })}
         </FormGroup>
       </Stack>
 

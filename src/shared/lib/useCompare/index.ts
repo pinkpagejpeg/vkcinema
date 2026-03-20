@@ -1,1 +1,0 @@
-export { useCompare } from './useCompare'

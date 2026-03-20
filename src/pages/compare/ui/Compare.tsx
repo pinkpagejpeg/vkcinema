@@ -3,13 +3,13 @@ import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete'
 import { CompareCard } from "./CompareCard"
 import { CompareCardSkeleton } from "./CompareCardSkeleton"
-import { useCompare } from "../../../shared/lib"
 import { Footer, Header, Error } from "../../../shared/ui"
 import type { IFilm } from "../../../shared/model"
 import { FilmsService } from "../../../shared/api"
+import { useLocalStorage } from "../../../shared/lib"
 
 export const Compare: FC = () => {
-    const { compares, removeFromCompare, clearCompare } = useCompare()
+    const [compares, setCompares] = useLocalStorage<number[]>('compare', [])
     const [compareFilms, setCompareFilms] = useState<IFilm[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -25,7 +25,7 @@ export const Compare: FC = () => {
         setError(null)
 
         try {
-            const promises = compares.map(id => FilmsService.getById(id))
+            const promises = compares.map(id => FilmsService.getById(String(id)))
             const responses = await Promise.all(promises)
             const films = responses.map(response => response.data)
 
@@ -42,14 +42,23 @@ export const Compare: FC = () => {
         fetchCompareFilms()
     }, [compares, fetchCompareFilms])
 
-    if (error) return <Error message={error} />
+    const handleRemove = (id: number | null) => {
+        if (!id) return
 
+        setCompares((prev) => {
+            return prev.includes(id)
+                ? prev.filter(i => i !== id)
+                : prev
+        })
+    }
+
+    if (error) return <Error message={error} />
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <Header />
 
-            <Container sx={{ flex: 1, py: 4 }}>
+            <Container maxWidth="xl" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
                     <Typography variant="h4">Сравнение фильмов</Typography>
                     {compares.length > 0 && (
@@ -57,7 +66,7 @@ export const Compare: FC = () => {
                             variant="outlined"
                             color="error"
                             startIcon={<DeleteIcon />}
-                            onClick={clearCompare}
+                            onClick={() => setCompares([])}
                         >
                             Очистить все
                         </Button>
@@ -81,7 +90,7 @@ export const Compare: FC = () => {
                             <CompareCard
                                 key={film.id}
                                 film={film}
-                                onRemove={removeFromCompare}
+                                onRemove={handleRemove}
                             />
                         )))}
                 </Grid>

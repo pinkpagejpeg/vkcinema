@@ -39,7 +39,7 @@ export interface IFilmRating {
 
 export interface IFilmGenres {
     name: string | null,
-    slug: string
+    slug: string | null
 }
 
 export interface IFilmCountries {

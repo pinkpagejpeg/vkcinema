@@ -1,4 +1,3 @@
 export { useFetching } from './useFetching'
-export { useFavorites } from './useFavorites'
-export { useCompare } from './useCompare'
+export { useLocalStorage } from './useLocalStorage'
 export { formatMovieLength } from './formatMovieLength'

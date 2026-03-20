@@ -6,14 +6,16 @@ import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import { InfoSkeleton } from "./InfoSkeleton"
 import { Error, Footer, Header, SubmitModal } from "../../../shared/ui"
 import { noPhotoIcon } from "../../../shared/assets"
-import { formatMovieLength, useCompare, useFavorites, useFetching } from "../../../shared/lib"
+import { formatMovieLength, useFetching, useLocalStorage } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 import type { IFilm } from "../../../shared/model"
 
 export const Info: FC = () => {
     const { id } = useParams()
-    const { isFavorite, toggleFavorite } = useFavorites()
-    const { addToCompare } = useCompare()
+    const filmId = Number(id)
+    const [favorites, setFavorites] = useLocalStorage<number[]>('favorites', [])
+    const [_, setCompareFilms] = useLocalStorage<number[]>('compare', [])
+    const isFavorite = favorites.includes(filmId)
     const [film, setFilm] = useState<IFilm | null>(null)
     const [open, setOpen] = useState(false)
 
@@ -37,8 +39,34 @@ export const Info: FC = () => {
     }
 
     const handleConfirm = () => {
-        toggleFavorite(String(film?.id))
+        if (!filmId) {
+            setOpen(false)
+            return
+        }
+
+        setFavorites((prev) => {
+            if (prev.includes(filmId)) {
+                return prev.filter(i => i !== filmId)
+            } else {
+                return [...prev, filmId]
+            }
+        })
         setOpen(false)
+    }
+
+    const handleCompare = () => {
+        setCompareFilms((prev) => {
+
+            if (prev.includes(filmId)) {
+                return prev.filter(existingId => existingId !== filmId)
+            }
+
+            if (prev.length === 2) {
+                return [prev[1], filmId]
+            }
+
+            return [...prev, filmId]
+        })
     }
 
     if (loading) return <InfoSkeleton />
@@ -51,11 +79,19 @@ export const Info: FC = () => {
 
             <Container maxWidth="xl" sx={{ flex: 1, py: 4 }}>
                 <Grid container spacing={4}>
-                    <Grid size={3}>
+                    {/* Левая колонка с постером */}
+                    <Grid
+                        size={{ xs: 12, sm: 5, md: 4, lg: 3 }}
+                        sx={{
+                            display: 'flex',
+                            justifyContent: { xs: 'center', sm: 'flex-start' }
+                        }}
+                    >
                         <Box
                             sx={{
-                                width: 300,
-                                height: 400,
+                                width: { xs: '100%', sm: 250, md: 280, lg: 300 },
+                                maxWidth: 300,
+                                height: 'auto',
                                 borderRadius: 1,
                                 overflow: 'hidden'
                             }}
@@ -63,17 +99,36 @@ export const Info: FC = () => {
                             <img
                                 src={film?.poster?.url || noPhotoIcon}
                                 alt={film.name || undefined}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                style={{
+                                    width: '100%',
+                                    height: 'auto',
+                                    objectFit: 'cover',
+                                    display: 'block'
+                                }}
                             />
                         </Box>
                     </Grid>
 
-                    <Grid size={9}>
+                    {/* Правая колонка с информацией */}
+                    <Grid size={{ xs: 12, sm: 7, md: 8, lg: 9 }}>
                         <Stack spacing={2}>
                             <Grid container alignItems="flex-start" spacing={2}>
-                                <Grid>
-                                    <Stack direction="row" alignItems="center" spacing={2}>
-                                        <Typography variant="h4">{film.name || film.alternativeName}</Typography>
+                                <Grid size={{ xs: 12 }}>
+                                    <Stack
+                                        direction={{ xs: 'column', sm: 'row' }}
+                                        alignItems={{ xs: 'flex-start', sm: 'center' }}
+                                        spacing={2}
+                                        flexWrap="wrap"
+                                    >
+                                        <Typography
+                                            variant="h4"
+                                            sx={{
+                                                wordBreak: 'break-word',
+                                                fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
+                                            }}
+                                        >
+                                            {film.name || film.alternativeName}
+                                        </Typography>
                                         <Badge
                                             color="error"
                                             badgeContent={`${film.ageRating || 0}+`}
@@ -88,7 +143,7 @@ export const Info: FC = () => {
                                         />
 
                                         <IconButton
-                                            onClick={() => addToCompare(String(film?.id))}
+                                            onClick={handleCompare}
                                             color="primary"
                                             aria-label="compare"
                                             sx={{
@@ -115,19 +170,26 @@ export const Info: FC = () => {
                                         </IconButton>
                                     </Stack>
                                     {film.enName && (
-                                        <Typography variant="body1" color="text.secondary">
+                                        <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
                                             {film.enName}
                                         </Typography>
                                     )}
                                 </Grid>
                             </Grid>
 
-                            <Typography sx={{ width: "75%" }}>{film.description}</Typography>
+                            <Typography
+                                sx={{
+                                    width: { xs: '100%', md: '75%' },
+                                    wordBreak: 'break-word'
+                                }}
+                            >
+                                {film.description}
+                            </Typography>
 
                             <Stack spacing={1}>
                                 <Typography variant="h5">О фильме</Typography>
                                 <Grid container spacing={4}>
-                                    <Grid>
+                                    <Grid size={{ xs: 5, sm: 4, md: 3 }}>
                                         <Stack spacing={0.5}>
                                             <Typography fontWeight={500}>Год производства</Typography>
                                             <Typography fontWeight={500}>Страна</Typography>
@@ -137,13 +199,15 @@ export const Info: FC = () => {
                                         </Stack>
                                     </Grid>
 
-                                    <Grid>
+                                    <Grid size={{ xs: 7, sm: 8, md: 9 }}>
                                         <Stack spacing={0.5}>
-                                            <Typography>{film.year || "—"}</Typography>
-                                            <Typography>
+                                            <Typography sx={{ wordBreak: 'break-word' }}>
+                                                {film.year || "—"}
+                                            </Typography>
+                                            <Typography sx={{ wordBreak: 'break-word' }}>
                                                 {film.countries?.map((c) => c.name).join(", ") || "—"}
                                             </Typography>
-                                            <Typography>
+                                            <Typography sx={{ wordBreak: 'break-word' }}>
                                                 {film.genres?.map((g) => g.name).join(", ") || "—"}
                                             </Typography>
                                             <Typography>{film.ageRating || 0}+</Typography>
@@ -159,20 +223,20 @@ export const Info: FC = () => {
                                     <>
                                         {film.rating.kp !== 0 && (
                                             <Grid container spacing={2}>
-                                                <Grid>
+                                                <Grid size={{ xs: 4, sm: 3, md: 2 }}>
                                                     <Typography fontWeight={500}>Кинопоиск</Typography>
                                                 </Grid>
-                                                <Grid>
+                                                <Grid size={{ xs: 8, sm: 9, md: 10 }}>
                                                     <Typography>{film.rating.kp}</Typography>
                                                 </Grid>
                                             </Grid>
                                         )}
                                         {film.rating.imdb !== 0 && (
                                             <Grid container spacing={2}>
-                                                <Grid>
+                                                <Grid size={{ xs: 4, sm: 3, md: 2 }}>
                                                     <Typography fontWeight={500}>IMDb</Typography>
                                                 </Grid>
-                                                <Grid>
+                                                <Grid size={{ xs: 8, sm: 9, md: 10 }}>
                                                     <Typography>{film.rating.imdb}</Typography>
                                                 </Grid>
                                             </Grid>
@@ -192,7 +256,7 @@ export const Info: FC = () => {
             <Footer />
 
             <SubmitModal
-                title={isFavorite(String(film.id)) ?
+                title={isFavorite ?
                     `Вы хотите удалить фильм ${film.name || film.alternativeName} из избранного?` :
                     `Вы хотите добавить фильм ${film.name || film.alternativeName} в избранное?`
                 }

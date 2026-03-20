@@ -1,4 +1,4 @@
-import { useState, type FC } from "react"
+import { useState, type FC, useCallback } from "react"
 import { NavLink } from "react-router-dom"
 import { Card, CardContent, Stack, CardMedia, Typography, Chip, Divider, Button, IconButton } from "@mui/material"
 import FavoriteIcon from '@mui/icons-material/Favorite'
@@ -7,28 +7,58 @@ import { FILM_ITEM_ROUTE } from "../../config"
 import type { IFilm } from "../../model"
 import { noPhotoIcon } from "../../assets"
 import { SubmitModal } from "../submitModal"
-import { useCompare, useFavorites } from "../../lib"
+import { useLocalStorage } from "../../lib"
 
 interface FilmCardProps {
     item: IFilm
 }
 
 export const FilmCard: FC<FilmCardProps> = ({ item }) => {
-    const { isFavorite, toggleFavorite } = useFavorites()
-    const { addToCompare } = useCompare()
+    const [favorites, setFavorites] = useLocalStorage<number[]>('favorites', [])
+    const [_, setCompareFilms] = useLocalStorage<number[]>('compare', [])
     const [open, setOpen] = useState(false)
+    const filmName = item.name || item.alternativeName
+    const filmId = item.id
+    const isFavorite = filmId ? favorites.includes(filmId) : false
 
-    const handleFavoriteClick = () => {
+    const handleFavoriteClick = useCallback(() => {
         setOpen(true)
-    }
+    }, [])
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         setOpen(false)
-    }
+    }, [])
 
-    const handleConfirm = () => {
-        toggleFavorite(String(item.id))
+    const handleConfirm = useCallback(() => {
+        if (!filmId) {
+            setOpen(false)
+            return
+        }
+
+        setFavorites((prev) => {
+            if (prev.includes(filmId)) {
+                return prev.filter(id => id !== filmId)
+            } else {
+                return [...prev, filmId]
+            }
+        })
         setOpen(false)
+    }, [item.id, setFavorites])
+
+    const handleCompare = () => {
+        if (!filmId) return
+
+        setCompareFilms((prev) => {
+            if (prev.includes(filmId)) {
+                return prev.filter(existingId => existingId !== filmId)
+            }
+
+            if (prev.length === 2) {
+                return [prev[1], filmId]
+            }
+
+            return [...prev, filmId]
+        })
     }
 
     return (
@@ -46,7 +76,7 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
                         <Stack spacing={1} flex={1}>
                             <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
                                 <Stack>
-                                    <Typography variant="h6">{item.name || item.alternativeName}</Typography>
+                                    <Typography variant="h6">{filmName}</Typography>
                                     {item.enName && (
                                         <Typography variant="body2" color="text.secondary">
                                             {item.enName}
@@ -90,7 +120,7 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
                                 </NavLink>
 
                                 <IconButton
-                                    onClick={() => addToCompare(String(item?.id))}
+                                    onClick={handleCompare}
                                     color="primary"
                                     aria-label="compare"
                                     sx={{
@@ -102,7 +132,7 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
                                 >
                                     <CompareArrowsIcon />
                                 </IconButton>
-                                
+
                                 <IconButton
                                     onClick={handleFavoriteClick}
                                     aria-label="add to favorites"
@@ -122,9 +152,9 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
             </Card>
             <SubmitModal
                 title={
-                    isFavorite(String(item.id)) ?
-                        `Вы хотите удалить фильм ${item.name || item.alternativeName} из избранного?` :
-                        `Вы хотите добавить фильм ${item.name || item.alternativeName} в избранное?`
+                    isFavorite
+                        ? `Вы хотите удалить фильм ${filmName} из избранного?`
+                        : `Вы хотите добавить фильм ${filmName} в избранное?`
                 }
                 open={open}
                 onClose={handleClose}

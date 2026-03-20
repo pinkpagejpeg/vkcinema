@@ -9,6 +9,7 @@ export const Footer: FC = () => {
             justifyContent="space-between"
             alignItems="center"
             py={2}
+            px={2}
             mb={2}
         >
             <Stack direction="row" alignItems="center" spacing={1}>

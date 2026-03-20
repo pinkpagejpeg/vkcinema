@@ -2,12 +2,12 @@ import { type FC, useCallback, useEffect, useState } from "react"
 import { Container, Stack, Typography, Box } from "@mui/material"
 import { type IFilm } from "../../../shared/model"
 import { Error, Footer, Header, FilmCard, FilmCardSkeleton } from "../../../shared/ui"
-import { useFavorites } from "../../../shared/lib"
+import { useLocalStorage } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 
 // Компонент страницы со списком избранных фильмов
 export const Favorites: FC = () => {
-    const { favorites } = useFavorites()
+    const [favorites, _] = useLocalStorage<number[]>('favorites', [])
     const [favoriteFilms, setFavoriteFilms] = useState<IFilm[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -23,7 +23,7 @@ export const Favorites: FC = () => {
         setError(null)
 
         try {
-            const promises = favorites.map(id => FilmsService.getById(id))
+            const promises = favorites.map(id => FilmsService.getById(String(id)))
             const responses = await Promise.all(promises)
             const films = responses.map(response => response.data)
             

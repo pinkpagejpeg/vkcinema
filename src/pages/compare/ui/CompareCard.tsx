@@ -6,7 +6,7 @@ import { formatMovieLength } from "../../../shared/lib"
 
 interface CompareCardProps {
     film: IFilm
-    onRemove: (id: string) => void
+    onRemove: (id: number | null) => void
 }
 
 export const CompareCard: FC<CompareCardProps> = ({ film, onRemove }) => {
@@ -22,7 +22,7 @@ export const CompareCard: FC<CompareCardProps> = ({ film, onRemove }) => {
                             <Button
                                 size="small"
                                 color="error"
-                                onClick={() => onRemove(String(film.id))}
+                                onClick={() => onRemove(film.id)}
                             >
                                 Удалить
                             </Button>
