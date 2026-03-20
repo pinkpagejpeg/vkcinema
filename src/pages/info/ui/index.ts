@@ -1,1 +1,1 @@
-export { FilmInfo } from "./FilmInfo"
+export { Info } from "./Info"

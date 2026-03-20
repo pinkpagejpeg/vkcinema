@@ -1,1 +1,1 @@
-export { FilmInfo } from "./ui"
+export { Info } from "./ui"

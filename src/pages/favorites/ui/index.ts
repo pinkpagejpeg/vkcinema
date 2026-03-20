@@ -1,1 +1,1 @@
-export { FilmFavorites } from './FilmFavorites'
+export { Favorites } from './Favorites'

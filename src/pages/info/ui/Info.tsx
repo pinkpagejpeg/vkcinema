@@ -2,14 +2,14 @@ import { type FC, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Container, Grid, Box, Badge, Stack, Typography, IconButton } from "@mui/material"
 import FavoriteIcon from '@mui/icons-material/Favorite'
-import { Loading, Error, Footer, Header, SubmitModal } from "../../../shared/ui"
+import { Error, Footer, Header, SubmitModal } from "../../../shared/ui"
 import { noPhotoIcon } from "../../../shared/assets"
 import { useFavorites, useFetching } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 import type { IFilm } from "../../../shared/model"
-import { FilmInfoSkeleton } from "./FilmInfoSkeleton"
+import { InfoSkeleton } from "./InfoSkeleton"
 
-export const FilmInfo: FC = () => {
+export const Info: FC = () => {
     const { id } = useParams()
     const { isFavorite, toggleFavorite } = useFavorites()
     const [film, setFilm] = useState<IFilm | null>(null)
@@ -46,7 +46,7 @@ export const FilmInfo: FC = () => {
         setOpen(false)
     }
 
-    if (loading) return <FilmInfoSkeleton />
+    if (loading) return <InfoSkeleton />
     if (error) return <Error message={error} />
     if (!film) return null
 

@@ -2,7 +2,7 @@ import { type FC } from "react"
 import { Container, Grid, Box, Stack, Skeleton } from "@mui/material"
 import { Footer, Header } from "../../../shared/ui"
 
-export const FilmInfoSkeleton: FC = () => {
+export const InfoSkeleton: FC = () => {
   return (
     <Container maxWidth="xl">
       <Header />

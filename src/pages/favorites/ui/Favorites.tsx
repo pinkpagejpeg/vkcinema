@@ -1,12 +1,12 @@
 import { type FC, useCallback, useEffect, useState } from "react"
 import { Container, Stack, Typography, Box } from "@mui/material"
 import { type IFilm } from "../../../shared/model"
-import { Loading, Error, Footer, Header, FilmCard, FilmCardSkeleton } from "../../../shared/ui"
+import { Error, Footer, Header, FilmCard, FilmCardSkeleton } from "../../../shared/ui"
 import { useFavorites } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 
 // Компонент страницы со списком избранных фильмов
-export const FilmFavorites: FC = () => {
+export const Favorites: FC = () => {
     const { favorites } = useFavorites()
     const [favoriteFilms, setFavoriteFilms] = useState<IFilm[]>([])
     const [loading, setLoading] = useState(true)

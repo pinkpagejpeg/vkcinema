@@ -1,1 +1,1 @@
-export { FilmFavorites } from './ui'
+export { Favorites } from './ui'

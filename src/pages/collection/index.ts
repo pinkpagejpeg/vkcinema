@@ -1,1 +1,1 @@
-export { FilmCollection } from "./ui"
+export { Collection } from "./ui"

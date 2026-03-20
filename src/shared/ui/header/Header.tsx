@@ -1,12 +1,12 @@
 import { type FC } from "react"
 import { Stack, Typography } from "@mui/material"
+import { FILM_FAVORITES_ROUTE, FILM_LIST_ROUTE, FILM_COMPARE_ROUTE } from "../../config"
 import logo from "../../assets/images/logo.svg"
-import { FILM_FAVORITES_ROUTE, FILM_LIST_ROUTE } from "../../config"
 
 const menu = [
     { label: 'Коллекция', href: FILM_LIST_ROUTE },
     { label: 'Избранное', href: FILM_FAVORITES_ROUTE },
-    { label: 'Сравнение', href: '/compare' }
+    { label: 'Сравнение', href: FILM_COMPARE_ROUTE }
 ]
 
 export const Header: FC = () => {
