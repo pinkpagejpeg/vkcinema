@@ -7,6 +7,7 @@ import { Error, NothingHere, PageLayout } from "../../../shared/ui"
 import type { IFilm } from "../../../shared/model"
 import { FilmsService } from "../../../shared/api"
 import { useLocalStorage } from "../../../shared/lib"
+import { COMPARE_KEY } from "../../../shared/config"
 
 const compareParams = [
     { key: 'title', label: 'Название' },
@@ -19,7 +20,7 @@ const compareParams = [
 
 // Компонент страницы со сравнением фильмов
 export const Compare: FC = () => {
-    const [compares, setCompares] = useLocalStorage<number[]>('compare', [])
+    const [compares, setCompares] = useLocalStorage<number[]>(COMPARE_KEY, [])
     const [compareFilms, setCompareFilms] = useState<IFilm[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)

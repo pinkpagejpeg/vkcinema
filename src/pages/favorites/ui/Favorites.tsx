@@ -4,10 +4,11 @@ import { type IFilm } from "../../../shared/model"
 import { Error, FilmCard, FilmCardSkeleton, NothingHere, PageLayout } from "../../../shared/ui"
 import { useLocalStorage } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
+import { FAVORITES_KEY } from "../../../shared/config"
 
 // Компонент страницы со списком избранных фильмов
 export const Favorites: FC = () => {
-    const [favorites, _] = useLocalStorage<number[]>('favorites', [])
+    const [favorites, _] = useLocalStorage<number[]>(FAVORITES_KEY, [])
     const [favoriteFilms, setFavoriteFilms] = useState<IFilm[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)

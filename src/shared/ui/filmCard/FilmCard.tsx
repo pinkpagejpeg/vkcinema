@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom"
 import { Card, CardContent, Stack, CardMedia, Typography, Chip, Divider, Button, IconButton } from "@mui/material"
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
-import { FILM_ITEM_ROUTE } from "../../config"
+import { COMPARE_KEY, FILM_ITEM_ROUTE, FAVORITES_KEY } from "../../config"
 import type { IFilm } from "../../model"
 import { noPhotoIcon } from "../../assets"
 import { SubmitModal } from "../submitModal"
@@ -14,8 +14,8 @@ interface FilmCardProps {
 }
 
 export const FilmCard: FC<FilmCardProps> = ({ item }) => {
-    const [favorites, setFavorites] = useLocalStorage<number[]>('favorites', [])
-    const [compares, setCompareFilms] = useLocalStorage<number[]>('compare', [])
+    const [favorites, setFavorites] = useLocalStorage<number[]>(FAVORITES_KEY, [])
+    const [compares, setCompareFilms] = useLocalStorage<number[]>(COMPARE_KEY, [])
     const [open, setOpen] = useState(false)
     const filmName = item.name || item.alternativeName || ''
     const filmId = item.id

@@ -10,12 +10,13 @@ import { Error, NothingHere, PageLayout, SubmitModal } from "../../../shared/ui"
 import { useFetching, useLocalStorage } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 import type { IFilm } from "../../../shared/model"
+import { COMPARE_KEY, FAVORITES_KEY } from "../../../shared/config"
 
 export const Info: FC = () => {
     const { id } = useParams()
     const filmId = Number(id)
-    const [favorites, setFavorites] = useLocalStorage<number[]>('favorites', [])
-    const [compares, setCompareFilms] = useLocalStorage<number[]>('compare', [])
+    const [favorites, setFavorites] = useLocalStorage<number[]>(FAVORITES_KEY, [])
+    const [compares, setCompareFilms] = useLocalStorage<number[]>(COMPARE_KEY, [])
     const isFavorite = favorites.includes(filmId)
     const isCompare = compares.includes(filmId)
     const [film, setFilm] = useState<IFilm | null>(null)
