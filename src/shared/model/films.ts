@@ -1,9 +1,3 @@
-// Общий интерфейс состояния redux slice
-export interface ICommonState {
-    loading: boolean, // индикатор загрузки
-    error: string | null, // сообщение об ошибке (при возникновении)
-}
-
 export interface IFilm {
     id: number | null,
     name: string | null,

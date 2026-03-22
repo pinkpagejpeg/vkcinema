@@ -1,7 +1,7 @@
 import { type FC, useCallback, useEffect, useState } from "react"
-import { Container, Stack, Typography, Box } from "@mui/material"
+import { Stack, Typography } from "@mui/material"
 import { type IFilm } from "../../../shared/model"
-import { Error, Footer, Header, FilmCard, FilmCardSkeleton } from "../../../shared/ui"
+import { Error, FilmCard, FilmCardSkeleton, NothingHere, PageLayout } from "../../../shared/ui"
 import { useLocalStorage } from "../../../shared/lib"
 import { FilmsService } from "../../../shared/api"
 
@@ -26,7 +26,7 @@ export const Favorites: FC = () => {
             const promises = favorites.map(id => FilmsService.getById(String(id)))
             const responses = await Promise.all(promises)
             const films = responses.map(response => response.data)
-            
+
             setFavoriteFilms(films)
         } catch (error) {
             setError('Не удалось загрузить избранные фильмы')
@@ -43,42 +43,32 @@ export const Favorites: FC = () => {
     if (error) return <Error message={error} />
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Header />
+        <PageLayout>
+            <Stack
+                direction="row"
+                spacing={4}
+                alignItems="flex-start"
+                sx={{ mt: 2, flex: 1 }}
+            >
+                <Stack spacing={2} flex={1}>
+                    <Typography variant="h4" component="h1" sx={{ mt: 2, mb: 3 }}>
+                        Избранные фильмы
+                    </Typography>
 
-            <Container maxWidth="xl" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <Stack
-                    direction="row"
-                    spacing={4}
-                    alignItems="flex-start"
-                    sx={{ mt: 2, flex: 1 }}
-                >
-                    <Stack spacing={2} flex={1}>
-                        <Typography variant="h4" component="h1" sx={{ mt: 2, mb: 3 }}>
-                            Избранные фильмы
-                        </Typography>
-
-                        {loading ? (
-                            [...Array(5)].map((_, i) => <FilmCardSkeleton key={i} />)
-                        ) : favoriteFilms.length === 0 ? (
-                            <Box sx={{ textAlign: 'start' }}>
-                                <Typography variant="h6" color="text.secondary">
-                                    У вас пока нет избранных фильмов
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                                    Добавьте фильмы в избранное, и они появятся здесь
-                                </Typography>
-                            </Box>
-                        ) : (
-                            favoriteFilms.map(film => (
-                                <FilmCard key={film.id} item={film} />
-                            ))
-                        )}
-                    </Stack>
+                    {loading ? (
+                        [...Array(5)].map((_, i) => <FilmCardSkeleton key={i} />)
+                    ) : favoriteFilms.length === 0 ? (
+                        <NothingHere
+                            title={'У вас пока нет избранных фильмов'}
+                            subtitle={'Добавьте фильмы в избранное, и они появятся здесь'}
+                        />
+                    ) : (
+                        favoriteFilms.map(film => (
+                            <FilmCard key={film.id} item={film} />
+                        ))
+                    )}
                 </Stack>
-            </Container>
-
-            <Footer />
-        </Box>
+            </Stack>
+        </PageLayout>
     )
 }

@@ -1,8 +1,8 @@
 import { type FC, useEffect, useRef, useCallback } from "react"
-import { Container, Stack, Box, Typography, CircularProgress } from "@mui/material"
+import { Stack, Box, Typography, CircularProgress } from "@mui/material"
 import { FilterComponent } from "./Filters"
-import { useFilms } from "./useFilms"
-import { Error, Footer, Header, FilmCard, FilmCardSkeleton } from "../../../shared/ui"
+import { useFilms } from "../model"
+import { Error, FilmCard, FilmCardSkeleton, NothingHere, PageLayout } from "../../../shared/ui"
 
 // Компонент страницы со списком всех фильмов
 export const Collection: FC = () => {
@@ -31,47 +31,44 @@ export const Collection: FC = () => {
     if (error) return <Error message={error} />
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Header />
+        <PageLayout>
+            <Stack
+                direction="row"
+                spacing={4}
+                alignItems="flex-start"
+                sx={{ mt: 2 }}
+            >
+                <Box sx={{ minWidth: 250 }}>
+                    <FilterComponent />
+                </Box>
 
-            <Container maxWidth="xl" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <Stack
-                    direction="row"
-                    spacing={4}
-                    alignItems="flex-start"
-                    sx={{ mt: 2 }}
-                >
-                    <Box sx={{ minWidth: 250 }}>
-                        <FilterComponent />
-                    </Box>
+                <Stack spacing={2} flex={1}>
+                    <Typography variant="h4" component="h1" sx={{ mt: 2, mb: 3 }}>
+                        Список фильмов
+                    </Typography>
 
-                    <Stack spacing={2} flex={1}>
-                        <Typography variant="h4" sx={{ mt: 2, mb: 3 }}>
-                            Список фильмов
-                        </Typography>
+                    {loading ? (
+                        [...Array(5)].map((_, i) => <FilmCardSkeleton key={i} />)
+                    ) : !films.length ? (
+                        <NothingHere
+                            title={'Фильмы не найдены'}
+                            subtitle={'Попробуйте перезагрузить страницу или повторить позже'}
+                        />
+                    ) : (
+                        <>
+                            {films.map(film => (
+                                <FilmCard key={film.id} item={film} />
+                            ))}
 
-                        {loading ? (
-                            [...Array(5)].map((_, i) => <FilmCardSkeleton key={i} />)
-                        ) : !films.length ? (
-                            <Typography color="text.secondary">Фильмы не найдены</Typography>
-                        ) : (
-                            <>
-                                {films.map(film => (
-                                    <FilmCard key={film.id} item={film} />
-                                ))}
-
-                                {hasMore && (
-                                    <Box ref={loaderRef} sx={{ py: 4, textAlign: 'center' }}>
-                                        {loadingMore && <CircularProgress size={32} />}
-                                    </Box>
-                                )}
-                            </>
-                        )}
-                    </Stack>
+                            {hasMore && (
+                                <Box ref={loaderRef} sx={{ py: 4, textAlign: 'center' }}>
+                                    {loadingMore && <CircularProgress size={32} />}
+                                </Box>
+                            )}
+                        </>
+                    )}
                 </Stack>
-            </Container>
-
-            <Footer />
-        </Box>
+            </Stack>
+        </PageLayout>
     )
 }

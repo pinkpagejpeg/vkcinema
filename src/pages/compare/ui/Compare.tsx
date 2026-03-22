@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState, type FC } from "react"
-import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material"
+import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete'
 import { CompareCard } from "./CompareCard"
 import { CompareCardSkeleton } from "./CompareCardSkeleton"
-import { Footer, Header, Error } from "../../../shared/ui"
+import { Error, NothingHere, PageLayout } from "../../../shared/ui"
 import type { IFilm } from "../../../shared/model"
 import { FilmsService } from "../../../shared/api"
 import { useLocalStorage } from "../../../shared/lib"
 
+// Компонент страницы со сравнением фильмов
 export const Compare: FC = () => {
     const [compares, setCompares] = useLocalStorage<number[]>('compare', [])
     const [compareFilms, setCompareFilms] = useState<IFilm[]>([])
@@ -55,48 +56,55 @@ export const Compare: FC = () => {
     if (error) return <Error message={error} />
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Header />
+        <PageLayout>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="h4" component="h1" sx={{ mt: 2, mb: 3 }}>Сравнение фильмов</Typography>
+                {compares.length > 0 && (
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => setCompares([])}
+                    >
+                        Очистить все
+                    </Button>
+                )}
+            </Stack>
 
-            <Container maxWidth="xl" sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
-                    <Typography variant="h4">Сравнение фильмов</Typography>
-                    {compares.length > 0 && (
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            startIcon={<DeleteIcon />}
-                            onClick={() => setCompares([])}
-                        >
-                            Очистить все
-                        </Button>
-                    )}
-                </Stack>
+            <Grid container spacing={4}>
+                {loading ? (
+                    [...Array(2)].map((_, i) => <CompareCardSkeleton key={i} />)
+                ) : compareFilms.length === 0 ? (
+                    <NothingHere
+                        title={'У вас пока нет фильмов для сравнения'}
+                        subtitle={'Добавьте фильмы в сравнение, и они появятся здесь'}
+                    />
+                ) : (
+                    <Paper elevation={0} sx={{ borderRadius: 2, border: '1px solid', borderColor: 'divider', width: '80%' }}>
+                        <Box sx={{ p: 2 }}>
+                            <Grid container spacing={4}>
+                                <Grid size={{ xs: 3 }}>
+                                    <Stack spacing={1} sx={{ height: '100%', justifyContent: 'space-between' }}>
+                                        <Box sx={{ height: 300 }} />
+                                        <Typography fontWeight={400}>Название</Typography>
+                                        <Typography fontWeight={400}>Год</Typography>
+                                        <Typography fontWeight={400}>Возрастной рейтинг</Typography>
+                                        <Typography fontWeight={400}>Рейтинг</Typography>
+                                        <Typography fontWeight={400}>Жанры</Typography>
+                                        <Typography fontWeight={400}>Длительность</Typography>
+                                    </Stack>
+                                </Grid>
 
-                <Grid container spacing={4}>
-                    {loading ? (
-                        [...Array(2)].map((_, i) => <CompareCardSkeleton key={i} />)
-                    ) : compareFilms.length === 0 ? (
-                        <Container sx={{ flex: 1, py: 4 }}>
-                            <Typography variant="h6" color="text.secondary">
-                                У вас пока нет фильмов для сравнения
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                                Добавьте фильмы в сравнение, и они появятся здесь
-                            </Typography>
-                        </Container>
-                    ) : (
-                        compareFilms.map((film) => (
-                            <CompareCard
-                                key={film.id}
-                                film={film}
-                                onRemove={handleRemove}
-                            />
-                        )))}
-                </Grid>
-            </Container>
-
-            <Footer />
-        </Box>
+                                {compareFilms.map((film) => (
+                                    <Grid size={{ xs: 9 / compareFilms.length }} key={film.id}>
+                                        <CompareCard film={film} onRemove={handleRemove} />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </Box>
+                    </Paper>
+                )}
+            </Grid>
+        </PageLayout>
     )
 }

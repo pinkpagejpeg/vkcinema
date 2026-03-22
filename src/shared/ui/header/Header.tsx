@@ -1,4 +1,5 @@
 import { type FC } from "react"
+import { useNavigate } from "react-router-dom"
 import { Stack, Typography } from "@mui/material"
 import { FILM_FAVORITES_ROUTE, FILM_LIST_ROUTE, FILM_COMPARE_ROUTE } from "../../config"
 import logo from "../../assets/images/logo.svg"
@@ -10,9 +11,25 @@ const menu = [
 ]
 
 export const Header: FC = () => {
+    const navigate = useNavigate()
+
+    const handleLogoClick = () => {
+        navigate(FILM_LIST_ROUTE)
+    }
     return (
         <Stack direction="row" justifyContent="space-between" alignItems="center" py={2} px={2}>
-            <Stack direction="row" alignItems="center" spacing={1}>
+            <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                onClick={handleLogoClick}
+                sx={{
+                    cursor: 'pointer',
+                    '&:hover': {
+                        opacity: 0.8
+                    }
+                }}
+            >
                 <img src={logo} alt="Логотип" height={39} width={50} />
                 <Typography fontWeight={700} fontSize="1.25rem">Кино</Typography>
             </Stack>

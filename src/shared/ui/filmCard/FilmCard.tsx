@@ -15,11 +15,12 @@ interface FilmCardProps {
 
 export const FilmCard: FC<FilmCardProps> = ({ item }) => {
     const [favorites, setFavorites] = useLocalStorage<number[]>('favorites', [])
-    const [_, setCompareFilms] = useLocalStorage<number[]>('compare', [])
+    const [compares, setCompareFilms] = useLocalStorage<number[]>('compare', [])
     const [open, setOpen] = useState(false)
     const filmName = item.name || item.alternativeName
     const filmId = item.id
     const isFavorite = filmId ? favorites.includes(filmId) : false
+    const isCompare = filmId ? compares.includes(filmId) : false
 
     const handleFavoriteClick = useCallback(() => {
         setOpen(true)
@@ -124,7 +125,7 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
                                     color="primary"
                                     aria-label="compare"
                                     sx={{
-                                        color: '#2196f3',
+                                        color: isCompare ? '#2196f3' : '#b4b4b4',
                                         '&:hover': {
                                             color: '#1976d2'
                                         }
@@ -137,7 +138,7 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
                                     onClick={handleFavoriteClick}
                                     aria-label="add to favorites"
                                     sx={{
-                                        color: '#ff4081',
+                                        color: isFavorite ? '#ff4081' : '#b4b4b4',
                                         '&:hover': {
                                             color: '#f50057'
                                         }

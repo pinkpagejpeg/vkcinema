@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState<T>(value)
@@ -50,23 +50,22 @@ export function useFilter() {
     }, [debouncedYears])
 
     // Обновление рейтинга
-    const setRatingRange = (newRating: [number, number]) => {
+    const setRatingRange = useCallback((newRating: [number, number]) => {
         setRating(newRating)
-    }
+    }, [])
 
     // Обновление годов
-    const setYearRange = (newYears: [number, number]) => {
+    const setYearRange = useCallback((newYears: [number, number]) => {
         setYears(newYears)
-    }
+    }, [])
 
     // Обновление жанров
-    const toggleGenre = (genre: string) => {
+    const toggleGenre = useCallback((genre: string) => {
         const newParams = new URLSearchParams(searchParams)
-        const currentGenres = searchParams.get("genres")?.split(",") || []
-        
+        const currentGenres = searchParams.get("genres")?.split(",").filter(Boolean) || []
+
         if (currentGenres.includes(genre)) {
             const filtered = currentGenres.filter(g => g !== genre)
-
             if (filtered.length) {
                 newParams.set("genres", filtered.join(","))
             } else {
@@ -75,9 +74,23 @@ export function useFilter() {
         } else {
             newParams.set("genres", [...currentGenres, genre].join(","))
         }
-        
-        setSearchParams(newParams, { replace: true }) 
-    }
+
+        setSearchParams(newParams, { replace: true })
+    }, [searchParams, setSearchParams])
+
+    // Сброс фильтров
+    const clearFilters = useCallback(() => {
+        const newParams = new URLSearchParams()
+
+        newParams.delete("rating")
+        newParams.delete("years")
+        newParams.delete("genres")
+
+        setSearchParams(newParams, { replace: true })
+
+        setRating([0, 10])
+        setYears([1990, new Date().getFullYear()])
+    }, [setSearchParams])
 
     return {
         ratingRange: rating,
@@ -85,6 +98,7 @@ export function useFilter() {
         currentGenres: genres,
         setRatingRange,
         setYearRange,
-        toggleGenre
+        toggleGenre,
+        clearFilters
     }
 }

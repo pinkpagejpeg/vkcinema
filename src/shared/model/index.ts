@@ -1,1 +1,1 @@
-export type { ICommonState, IFilm, IFilmGenres } from './films'
+export type { IFilm, IFilmGenres, IFilmRating, IFilmCountries } from './films'

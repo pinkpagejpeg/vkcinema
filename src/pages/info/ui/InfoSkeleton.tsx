@@ -1,19 +1,17 @@
 import { type FC } from "react"
-import { Container, Grid, Box, Stack, Skeleton } from "@mui/material"
-import { Footer, Header } from "../../../shared/ui"
+import { Grid, Box, Stack, Skeleton } from "@mui/material"
+import { PageLayout } from "../../../shared/ui"
 
 export const InfoSkeleton: FC = () => {
   return (
-    <Container maxWidth="xl">
-      <Header />
-
+    <PageLayout>
       <Grid container spacing={4}>
         <Grid size={3}>
           <Box sx={{ width: 300, height: 400, borderRadius: 1 }}>
-            <Skeleton 
-              variant="rectangular" 
-              width="100%" 
-              height="100%" 
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height="100%"
               animation="wave"
               sx={{ borderRadius: 1 }}
             />
@@ -83,8 +81,6 @@ export const InfoSkeleton: FC = () => {
           </Stack>
         </Grid>
       </Grid>
-
-      <Footer />
-    </Container>
+    </PageLayout>
   )
 }
