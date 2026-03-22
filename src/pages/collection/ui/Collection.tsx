@@ -32,21 +32,16 @@ export const Collection: FC = () => {
 
     return (
         <PageLayout>
-            <Stack
-                direction="row"
-                spacing={4}
-                alignItems="flex-start"
-                sx={{ mt: 2 }}
-            >
+            <Typography variant="h4" component="h1" sx={{ mt: 2, mb: 3 }}>
+                Коллекция фильмов
+            </Typography>
+
+            <Stack direction="row" spacing={4} alignItems="flex-start">
                 <Box sx={{ minWidth: 250 }}>
                     <FilterComponent />
                 </Box>
 
                 <Stack spacing={2} flex={1}>
-                    <Typography variant="h4" component="h1" sx={{ mt: 2, mb: 3 }}>
-                        Список фильмов
-                    </Typography>
-
                     {loading ? (
                         [...Array(5)].map((_, i) => <FilmCardSkeleton key={i} />)
                     ) : !films.length ? (
