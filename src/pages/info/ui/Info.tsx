@@ -127,10 +127,8 @@ export const Info: FC = () => {
                     </Grid>
 
                     <SubmitModal
-                        title={isFavorite ?
-                            `Вы хотите удалить фильм ${film.name || film.alternativeName} из избранного?` :
-                            `Вы хотите добавить фильм ${film.name || film.alternativeName} в избранное?`
-                        }
+                        filmName={film.name || film.alternativeName || ''}
+                        isFavorite={isFavorite}
                         open={open}
                         onClose={handleClose}
                         onConfirm={handleConfirm}

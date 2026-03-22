@@ -7,7 +7,7 @@ import { FILM_ITEM_ROUTE } from "../../config"
 import type { IFilm } from "../../model"
 import { noPhotoIcon } from "../../assets"
 import { SubmitModal } from "../submitModal"
-import { useLocalStorage } from "../../lib"
+import { formatMovieLength, useLocalStorage } from "../../lib"
 
 interface FilmCardProps {
     item: IFilm
@@ -17,7 +17,7 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
     const [favorites, setFavorites] = useLocalStorage<number[]>('favorites', [])
     const [compares, setCompareFilms] = useLocalStorage<number[]>('compare', [])
     const [open, setOpen] = useState(false)
-    const filmName = item.name || item.alternativeName
+    const filmName = item.name || item.alternativeName || ''
     const filmId = item.id
     const isFavorite = filmId ? favorites.includes(filmId) : false
     const isCompare = filmId ? compares.includes(filmId) : false
@@ -91,9 +91,7 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
                                 {item.movieLength ? (
                                     <>
                                         <Typography variant="body2">
-                                            {item.movieLength >= 60
-                                                ? `${Math.floor(item.movieLength / 60)} ч. ${item.movieLength % 60} мин.`
-                                                : `${item.movieLength} мин.`}
+                                            {formatMovieLength(item.movieLength)}
                                         </Typography>
                                         <Divider orientation="vertical" flexItem />
                                     </>
@@ -152,11 +150,8 @@ export const FilmCard: FC<FilmCardProps> = ({ item }) => {
                 </CardContent>
             </Card>
             <SubmitModal
-                title={
-                    isFavorite
-                        ? `Вы хотите удалить фильм ${filmName} из избранного?`
-                        : `Вы хотите добавить фильм ${filmName} в избранное?`
-                }
+                filmName={filmName}
+                isFavorite={isFavorite}
                 open={open}
                 onClose={handleClose}
                 onConfirm={handleConfirm}

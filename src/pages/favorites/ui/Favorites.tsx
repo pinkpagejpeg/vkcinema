@@ -1,4 +1,4 @@
-import { type FC, useCallback, useEffect, useState } from "react"
+import { type FC, useEffect, useState } from "react"
 import { Stack, Typography } from "@mui/material"
 import { type IFilm } from "../../../shared/model"
 import { Error, FilmCard, FilmCardSkeleton, NothingHere, PageLayout } from "../../../shared/ui"
@@ -12,7 +12,7 @@ export const Favorites: FC = () => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    const fetchFavoriteFilms = useCallback(async () => {
+    const fetchFavoriteFilms = async () => {
         if (favorites.length === 0) {
             setFavoriteFilms([])
             setLoading(false)
@@ -34,11 +34,11 @@ export const Favorites: FC = () => {
         } finally {
             setLoading(false)
         }
-    }, [favorites])
+    }
 
     useEffect(() => {
         fetchFavoriteFilms()
-    }, [favorites, fetchFavoriteFilms])
+    }, [favorites])
 
     if (error) return <Error message={error} />
 

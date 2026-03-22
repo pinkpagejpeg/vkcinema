@@ -9,13 +9,14 @@ import {
 } from "@mui/material"
 
 interface SubmitModalProps {
-    title: string
+    filmName: string
+    isFavorite: boolean
     open: boolean
     onClose: () => void
     onConfirm: () => void
 }
 
-export const SubmitModal: FC<SubmitModalProps> = ({ title, open, onClose, onConfirm }) => {
+export const SubmitModal: FC<SubmitModalProps> = ({ filmName, isFavorite, open, onClose, onConfirm }) => {
     return (
         <Dialog
             open={open}
@@ -27,7 +28,9 @@ export const SubmitModal: FC<SubmitModalProps> = ({ title, open, onClose, onConf
             </DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    {title}
+                    {isFavorite
+                        ? `Вы хотите удалить фильм ${filmName} из избранного?`
+                        : `Вы хотите добавить фильм ${filmName} в избранное?`}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

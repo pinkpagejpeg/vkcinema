@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FC } from "react"
+import { useEffect, useState, type FC } from "react"
 import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete'
 import { CompareCard } from "./CompareCard"
@@ -8,6 +8,15 @@ import type { IFilm } from "../../../shared/model"
 import { FilmsService } from "../../../shared/api"
 import { useLocalStorage } from "../../../shared/lib"
 
+const compareParams = [
+    { key: 'title', label: 'Название' },
+    { key: 'year', label: 'Год' },
+    { key: 'ageRating', label: 'Возрастной рейтинг' },
+    { key: 'rating', label: 'Рейтинг' },
+    { key: 'genres', label: 'Жанры' },
+    { key: 'duration', label: 'Длительность' }
+] as const
+
 // Компонент страницы со сравнением фильмов
 export const Compare: FC = () => {
     const [compares, setCompares] = useLocalStorage<number[]>('compare', [])
@@ -15,7 +24,7 @@ export const Compare: FC = () => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    const fetchCompareFilms = useCallback(async () => {
+    const fetchCompareFilms = async () => {
         if (compares.length === 0) {
             setCompareFilms([])
             setLoading(false)
@@ -37,11 +46,11 @@ export const Compare: FC = () => {
         } finally {
             setLoading(false)
         }
-    }, [compares])
+    }
 
     useEffect(() => {
         fetchCompareFilms()
-    }, [compares, fetchCompareFilms])
+    }, [compares])
 
     const handleRemove = (id: number | null) => {
         if (!id) return
@@ -86,12 +95,11 @@ export const Compare: FC = () => {
                                 <Grid size={{ xs: 3 }}>
                                     <Stack spacing={1} sx={{ height: '100%', justifyContent: 'space-between' }}>
                                         <Box sx={{ height: 300 }} />
-                                        <Typography fontWeight={400}>Название</Typography>
-                                        <Typography fontWeight={400}>Год</Typography>
-                                        <Typography fontWeight={400}>Возрастной рейтинг</Typography>
-                                        <Typography fontWeight={400}>Рейтинг</Typography>
-                                        <Typography fontWeight={400}>Жанры</Typography>
-                                        <Typography fontWeight={400}>Длительность</Typography>
+                                        {compareParams.map((param) => (
+                                            <Typography key={param.key} fontWeight={400}>
+                                                {param.label}
+                                            </Typography>
+                                        ))}
                                     </Stack>
                                 </Grid>
 
